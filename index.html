@@ -287,11 +287,14 @@
         </div>
 
         
-        <form id="contact-form">
+        <form action="https://api.web3forms.com/submit" method="POST" id="contact-form">
   <!-- Hidden fields for Web3Forms -->
   <input type="hidden" name="access_key" value="96429bb0-512d-4cd9-8851-af9ad79fe6d1">
   <input type="hidden" name="subject" value="New Message from Portfolio Contact Form">
   <input type="hidden" name="from_name" value="Portfolio Website">
+  
+  <!-- Redirect back to your contact section after submission -->
+  <input type="hidden" name="redirect" value="https://red-eye26.github.io/Fardin_Portfolio/#contact">
 
   <div id="form-wrapper">
     <div class="form-group">
@@ -317,7 +320,7 @@
     <div id="status-message" style="display: none; text-align:center; margin-top:15px; font-weight:500;"></div>
   </div>
 
-  <!-- Success State -->
+  <!-- Success State (won't be used with native submission, but keeping for future) -->
   <div id="success-state" style="display: none; text-align: center; padding: 20px;">
     <div
       style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
@@ -371,4 +374,5 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
