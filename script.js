@@ -593,78 +593,30 @@ function init3DTilt() {
   });
 }
 
-// Contact form with Web3Forms integration
+// Contact form with loading state
 function initContactForm() {
   const form = document.getElementById('contact-form');
   const submitBtn = document.getElementById('submit-btn');
   const btnText = document.getElementById('btn-text');
   const btnLoader = document.getElementById('btn-loader');
-  const statusMessage = document.getElementById('status-message');
-  const formWrapper = document.getElementById('form-wrapper');
-  const successState = document.getElementById('success-state');
-  const resetBtn = document.getElementById('reset-btn');
   
   if (!form) {
     console.error('Contact form not found!');
     return;
   }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(form);
-    
+  // Show loading state when form submits
+  form.addEventListener('submit', function(e) {
     // Show loading state
     btnText.style.display = 'none';
     btnLoader.style.display = 'inline';
     submitBtn.disabled = true;
-    statusMessage.style.display = 'none';
     
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Hide form, show success state
-        formWrapper.style.display = 'none';
-        successState.style.display = 'block';
-        
-        // Reset form
-        form.reset();
-      } else {
-        // Show error message
-        statusMessage.textContent = 'Error: ' + (data.message || 'Something went wrong');
-        statusMessage.style.color = '#ef4444';
-        statusMessage.style.display = 'block';
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-      statusMessage.textContent = 'Network error. Please try again.';
-      statusMessage.style.color = '#ef4444';
-      statusMessage.style.display = 'block';
-    } finally {
-      // Reset button state
-      btnText.style.display = 'inline';
-      btnLoader.style.display = 'none';
-      submitBtn.disabled = false;
-    }
+    console.log('📤 Form submitting to Web3Forms...');
+    // Let form submit naturally (don't prevent default)
   });
 
-  // Reset button to show form again
-  if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      successState.style.display = 'none';
-      formWrapper.style.display = 'block';
-      statusMessage.style.display = 'none';
-    });
-  }
-
-  console.log('✅ Contact form initialized successfully');
+  console.log('✅ Contact form initialized - native HTML submission (no CORS)');
 }
 
 
@@ -734,4 +686,5 @@ function handleResponsive() {
 
 window.addEventListener('resize', handleResponsive);
 handleResponsive();
+
 
