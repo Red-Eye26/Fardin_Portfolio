@@ -176,6 +176,7 @@ p, .body-regular {
   left: 50%;
   transform: translateX(-50%);
   animation: bounce 2s infinite;
+  z-index: 3; /* Ensure it's above Spline */
 }
 
 @keyframes bounce {
@@ -360,10 +361,19 @@ nav a.active::after {
 /* Section Styling */
 section {
   position: relative;
-  z-index: 2;
+  z-index: 2; /* Was 2, keep relative stacking */
   padding: 100px 20px;
   min-height: 100vh;
 }
+
+/* Hero section needs higher z-index for content */
+section#home {
+  z-index: 3;
+}
+section#home > div[style*="z-index: 10"] {
+  z-index: 3 !important; /* Ensure content is above Spline */
+}
+
 
 /* Stats Counter Section */
 .stat-card {
@@ -779,122 +789,208 @@ section {
     transform: translate(1px, 2px) rotate(0deg);
   }
   40% {
-    transform: translate(1px, -1px) rotate(1deg);
+    transform: translate(2px, -1px) rotate(-1deg);
   }
   50% {
-    transform: translate(-1px, 3px) rotate(-1deg);
+    transform: translate(-1px, 1px) rotate(1deg);
   }
   60% {
-    transform: translate(-1px, 1px) rotate(0deg);
+    transform: translate(0px, -2px) rotate(0deg);
   }
   70% {
-    transform: translate(3px, 1px) rotate(-1deg);
+    transform: translate(1px, 1px) rotate(-1deg);
   }
   80% {
-    transform: translate(-2px, -1px) rotate(1deg);
+    transform: translate(-2px, 0px) rotate(1deg);
   }
   90% {
+    transform: translate(1px, -1px) rotate(0deg);
+  }
+  100% {
     transform: translate(2px, 1px) rotate(0deg);
   }
-  100% {
-    transform: translate(1px, -2px) rotate(-1deg);
-  }
 }
+
+/* Long fazers (decorative streaks used in loader)
 .longfazers {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0; /* Align with container */
-  left: 0; /* Align with container */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transform: translateY(6px);
 }
 .longfazers span {
-  position: absolute;
-  height: 2px;
-  width: 20%;
-  background: #667eea; /* Theme color */
+  display:block;
+  width: 6px;
+  height: 40px;
+  background: linear-gradient(180deg, rgba(102,126,234,0.2), rgba(118,75,162,0.15));
+  border-radius: 4px;
+  opacity: 0.7;
+  animation: fazerMove 1.2s linear infinite;
 }
-.longfazers span:nth-child(1) {
-  top: 20%;
-  animation: lf 0.6s linear infinite;
-  animation-delay: -5s;
-}
-.longfazers span:nth-child(2) {
-  top: 40%;
-  animation: lf2 0.8s linear infinite;
-  animation-delay: -1s;
-}
-.longfazers span:nth-child(3) {
-  top: 60%;
-  animation: lf3 0.6s linear infinite;
-}
-.longfazers span:nth-child(4) {
-  top: 80%;
-  animation: lf4 0.5s linear infinite;
-  animation-delay: -3s;
-}
-@keyframes lf {
-  0% {
-    left: 200%;
-  }
-  100% {
-    left: -200%;
-    opacity: 0;
-  }
-}
-@keyframes lf2 {
-  0% {
-    left: 200%;
-  }
-  100% {
-    left: -200%;
-    opacity: 0;
-  }
-}
-@keyframes lf3 {
-  0% {
-    left: 200%;
-  }
-  100% {
-    left: -100%;
-    opacity: 0;
-  }
-}
-@keyframes lf4 {
-  0% {
-    left: 200%;
-  }
-  100% {
-    left: -100%;
-    opacity: 0;
-  }
-}
+.longfazers span:nth-child(2) { animation-delay: 0.12s; height: 28px; opacity: 0.6; }
+.longfazers span:nth-child(3) { animation-delay: 0.24s; height: 36px; opacity: 0.5; }
+.longfazers span:nth-child(4) { animation-delay: 0.36s; height: 30px; opacity: 0.45; }
 
-.loader-text-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #1a1a1a;
-    margin-top: 20px; /* Space it below the loader container */
-    text-align: center;
-    font-family: 'Host Grotesk', sans-serif;
-}
-/* --- End of NEW Loader --- */
+@keyframes fazerMove {
+  0% { transform: translateY(0) scaleY(1); opacity: 0.6; }
+  50% { transform: translateY(-18px) scaleY(1.2); opacity: 1; }
+  100% { transform: translateY(0) scaleY(1); opacity: 0.6; }
+} */
 
-/* Project Button Styles (from <script> tag) */
+/* Buttons used by projects (script injects .btn) */
+/* Buttons used by projects - IMPROVED */
 .btn {
-  text-align:center;
-  padding:14px 0;
-  border-radius:10px;
-  color:#fff;
-  text-decoration:none;
-  font-weight:600;
-  font-size:14px;
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* Reduced gap */
+  padding: 10px 16px; /* More horizontal padding */
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px; /* Fixed font size */
+  color: #ffffff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  cursor: pointer;
+  white-space: nowrap; /* Prevent text wrap */
+  min-height: 42px; /* Fixed height */
+  line-height: 1; /* Tight line height */
 }
-.btn:hover {
-  transform:translateY(-3px);
-  box-shadow:0 5px 15px rgba(0,0,0,0.15);
+
+.btn:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 10px 30px rgba(102,126,234,0.18); 
 }
-.project-btn { background:linear-gradient(135deg,#667eea,#764ba2); }
-.video-btn { background:linear-gradient(135deg,#8b5cf6,#6d28d9); }
-.guide-btn { background:linear-gradient(135deg,#4facfe,#00f2fe); }
+
+.btn:active { 
+  transform: translateY(-2px); 
+}
+
+/* Variant styles */
+.project-btn { 
+  background: linear-gradient(135deg,#4f46e5,#7c3aed); 
+}
+
+.video-btn { 
+  background: linear-gradient(135deg,#0ea5e9,#06b6d4); 
+}
+
+.guide-btn { 
+  background: linear-gradient(135deg,#10b981,#059669); 
+}
+
+.btn:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(102,126,234,0.18); }
+.btn:active { transform: translateY(-2px); }
+
+/* Variant styles */
+.project-btn { background: linear-gradient(135deg,#4f46e5,#7c3aed); }
+.video-btn { background: linear-gradient(135deg,#0ea5e9,#06b6d4); }
+.guide-btn { background: linear-gradient(135deg,#10b981,#059669); }
+
+/* Chatbot small improvements (some layout was inline; reinforce here) */
+#chatbot-toggler { transition: transform .18s ease, box-shadow .18s ease; }
+#chatbot-toggler:active { transform: scale(.98); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+
+#chatbot-window { min-width: 320px; max-width: 420px; }
+#chat-log .chat-message { word-break: break-word; }
+
+/* Tiny utility */
+.hidden { display: none !important; }
+
+/* Ensure html/body take full height for fixed elements */
+html, body { height: 100%; }
+
+/* Small responsive tweaks for loader text */
+.loader-text-title {
+  font-weight: 800;      /* thoda zyada bold */
+  color: #374151;
+  margin-top: 12px;
+  font-size: 1.8rem;     /* increase size - change value if you want bigger */
+  letter-spacing: 0.2px;
+  text-transform: none;
+}
+
+
+
+/* final safety: ensure orbit icon images don't overflow container */
+.orbit-icon img, .orbit-icon { max-width: 100%; max-height: 100%; }
+
+/* end of file */
+/* ---------------------------
+   Chat window scroll fixes
+   --------------------------- */
+
+/* By default, when chat is NOT active, it should NOT receive pointer events.
+   This guarantees it won't block page scrolling. */
+#chatbot-window {
+  pointer-events: none;      /* don't block mouse events when hidden */
+  -webkit-overflow-scrolling: touch; /* smoother on iOS */
+}
+
+/* When active, allow interaction */
+#chatbot-window.active {
+  pointer-events: auto;
+}
+
+/* Let chat-log be scrollable when interacting, but don't prevent page scroll chaining.
+   Use 'auto' so if chat is at edge, page scroll continues. */
+#chat-log {
+  overscroll-behavior: auto;
+  max-height: 70vh; /* keep same as before, ensure scroll area */
+  overflow-y: auto;
+}
+
+/* Ensure other elements don't accidentally trap scroll */
+#chatbot-window, #chat-log, #chatbot-window * {
+  -ms-touch-action: auto;
+  touch-action: auto;
+}
+
+/* ===== SCROLL FIX ===== */
+html {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
+body {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  height: auto !important;
+  min-height: 100vh;
+}
+
+/* Remove any overflow hidden from sections */
+section {
+  overflow: visible !important;
+}
+
+/* Ensure main container allows scroll */
+#app, main {
+  overflow: visible !important;
+}
+
+/* ===== FORM MESSAGE ANIMATION ===== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-message {
+  animation: slideIn 0.3s ease;
+}
 
