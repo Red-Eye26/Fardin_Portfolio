@@ -1,3 +1,87 @@
+// --- NEW: CHATBOT INTENTS ---
+// The chatbot's knowledge base, taken from your JSON
+// --- ADVANCED CHATBOT INTENTS ---
+const CHATBOT_INTENTS = {
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["hi", "hello", "hey", "good morning", "sup", "what's up", "how are you"],
+      "responses": [
+        "Hello! 👋 I'm Fardin's AI assistant. I can help you learn about his skills, experience, and projects!",
+        "Hi there! 😊 What would you like to know about Fardin?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["bye", "goodbye", "thanks", "thank you", "that's all"],
+      "responses": [
+        "Goodbye! Feel free to reach out anytime. 👋",
+        "Thanks for chatting! Have a great day! 😊"
+      ]
+    },
+    {
+      "tag": "about_fardin",
+      "patterns": ["who is fardin", "tell me about fardin", "about fardin", "yourself", "about you", "summary"],
+      "responses": [
+        "Fardin is a detail-oriented **MIS Executive** with expertise in Excel, Google Sheets, Apps Script, and data automation. He currently works at Outlander Casuals. 💼"
+      ]
+    },
+    {
+      "tag": "key_skills",
+      "patterns": ["skills", "what are his skills", "key skills", "abilities", "expertise", "what can he do"],
+      "responses": [
+        "**Fardin's Key Skills:**\n📊 Advanced Excel (VLOOKUP, HLOOKUP, Pivot Tables)\n📈 Google Sheets & Apps Script Automation\n💾 Basic SQL\n🤖 AI Tools (ChatGPT, Gemini, Claude)\n⚙️ Data Automation & MIS Reporting"
+      ]
+    },
+    {
+      "tag": "experience_summary",
+      "patterns": ["experience", "work experience", "job history", "career", "where has he worked"],
+      "responses": [
+        "**Work Experience:**\n\n🏢 **Outlander Casuals** (Apr 2025 - Present) - MIS Executive\n🏢 **APTARA** (Aug 2024 - Mar 2025) - Backend Executive\n🏢 **Desolindia** (Nov 2023 - Aug 2024) - Process Associate"
+      ]
+    },
+    {
+      "tag": "current_role",
+      "patterns": ["current job", "current role", "what does he do now", "outlander", "present job"],
+      "responses": [
+        "Fardin is currently an **MIS Executive at Outlander Casuals** (since April 2025). He handles order sales data, fabric consumption tracking, and creates automated reports using Excel and Google Sheets. 📊"
+      ]
+    },
+    {
+      "tag": "education",
+      "patterns": ["education", "degree", "qualification", "study", "college", "university"],
+      "responses": [
+        "**Education:**\n🎓 **Bachelor of Arts (B.A.)** - Delhi University, New Delhi\n📚 Currently pursuing"
+      ]
+    },
+    {
+      "tag": "contact",
+      "patterns": ["contact", "email", "phone", "linkedin", "reach", "get in touch"],
+      "responses": [
+        "**Contact Fardin:**\n📧 Email: fardinwork26@gmail.com\n💼 LinkedIn: linkedin.com/in/fardin-sheikh-a58a07362\n📱 Phone: +91-8595957579"
+      ]
+    },
+    {
+      "tag": "hobbies",
+      "patterns": ["hobbies", "interests", "hobby", "what does he like", "free time"],
+      "responses": [
+        "Fardin enjoys:\n♟️ Playing Chess\n🏏 Playing Cricket"
+      ]
+    },
+    {
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm not sure about that. Try asking about:\n• His skills\n• Work experience\n• Education\n• Contact details",
+        "Hmm, I didn't understand. You can ask me about his skills, experience, or projects!"
+      ]
+    }
+  ]
+};
+
+
+
+
 // --- CONFIGURATION ---
 // IMPORTANT: Replace this with your Google Sheet ID
 const SHEET_ID = '19TBsFiRZY3ZXKqVcERnI9hoVtN10K7cK3ICEoyIlu0U';
@@ -6,7 +90,8 @@ const SHEET_ID = '19TBsFiRZY3ZXKqVcERnI9hoVtN10K7cK3ICEoyIlu0U';
 // You MUST update your Google Sheet to have these tabs and headers.
 // See README.md for the full structure.
 const SHEET_NAMES = {
-    CONFIG: 'Config', // Expects: 'Profile Image URL', 'Email', 'Location', 'Linkedin Link', 'GitHub Link'
+    // UPDATED: Added "Resume Link" to expected headers
+    CONFIG: 'Config', // Expects: 'Profile Image URL', 'Email', 'Location', 'Linkedin Link', 'GitHub Link', 'Resume Link'
     FLOATING_ICONS: 'FloatingIcons', // Expects: 'Skill', 'ImageURL'
     ABOUT_CARDS: 'AboutCards', // Expects: 'title', 'description'
     EXPERIENCE: 'Experience', // Expects: 'Type', 'Date Range', 'Title', 'Company/School', 'Description'
@@ -84,6 +169,8 @@ window.addEventListener('load', function() {
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
   });
+  document.body.style.overflowY = 'auto'; // ✅ Force enable scroll on load
+
   
   function raf(time) {
     lenis.raf(time);
@@ -93,7 +180,7 @@ window.addEventListener('load', function() {
 
   // Initialize Typed.js
   typingInstance = new Typed('#typed-role', {
-    strings: ['MIS Specialist', 'Data Analyst', 'Apps Script Developer', 'Automation Expert'],
+    strings: ['MIS Specialist 💼', 'Data Analyst 📈', 'Apps Script Developer 💻', 'Automation Expert 🤖'],
     typeSpeed: 50,
     backSpeed: 30,
     backDelay: 2000,
@@ -127,11 +214,16 @@ window.addEventListener('load', function() {
   // Initialize contact form
   initContactForm();
 
+  // NEW: Initialize chatbot
+  initChatbot();
+
   // Initialize mobile menu
   initMobileMenu();
 
   // Set current year
   document.getElementById('current-year').textContent = new Date().getFullYear();
+  document.body.style.overflowY = 'auto';
+
 });
 
 /**
@@ -318,22 +410,31 @@ function populateData(data) {
       const buttons = [];
 
       if (project.link && project.link.trim() && project.link !== '#') {
-        buttons.push(`
-          <a href="${project.link}" target="_blank" class="btn project-btn">🔗 Project</a>
-        `);
-      }
+  buttons.push(`
+    <a href="${project.link}" target="_blank" class="btn project-btn">
+      <span style="font-size:16px;">🔗</span>
+      <span>Project</span>
+    </a>
+  `);
+}
 
-      if (project.videoLink && project.videoLink.trim() && project.videoLink !== '#') {
-        buttons.push(`
-          <a href="${project.videoLink}" target="_blank" class="btn video-btn">🎥 Video</a>
-        `);
-      }
+     if (project.videoLink && project.videoLink.trim() && project.videoLink !== '#') {
+  buttons.push(`
+    <a href="${project.videoLink}" target="_blank" class="btn video-btn">
+      <span style="font-size:16px;">🎥</span>
+      <span>Video</span>
+    </a>
+  `);
+}
 
       if (project.instructions && project.instructions.trim() && project.instructions !== '#') {
-        buttons.push(`
-          <a href="${project.instructions}" target="_blank" class="btn guide-btn">📋 Guide</a>
-        `);
-      }
+  buttons.push(`
+    <a href="${project.instructions}" target="_blank" class="btn guide-btn">
+      <span style="font-size:16px;">📋</span>
+      <span>Guide</span>
+    </a>
+  `);
+}
 
       // Dynamic grid columns (1, 2, or 3)
       const colCount = buttons.length || 1;
@@ -395,20 +496,54 @@ function populateData(data) {
       document.getElementById('contact-github').href = data.config['GitHub Link'];
       document.getElementById('footer-github').href = data.config['GitHub Link'];
     }
+
+    // NEW: Populate Resume Button
+    const resumeBtn = document.getElementById('hero-resume-btn');
+    if (resumeBtn && data.config['Resume Link'] && data.config['Resume Link'] !== '#') {
+        resumeBtn.href = data.config['Resume Link'];
+        resumeBtn.target = '_blank'; // Open in new tab
+        resumeBtn.rel = 'noopener noreferrer';
+    } else if (resumeBtn) {
+        // If no link, hide the button or disable it
+        resumeBtn.href = '#';
+        resumeBtn.style.opacity = '0.5';
+        resumeBtn.style.pointerEvents = 'none';
+        resumeBtn.title = 'Resume not available';
+    }
   }
 
-  // Hide loader
-  setTimeout(() => {
-    const loader = document.getElementById('loader-overlay');
+   // Hide loader and unlock scroll - IMPROVED
+setTimeout(() => {
+  const loader = document.getElementById('loader-overlay');
+  if (loader) {
+    loader.style.transition = 'opacity 0.5s ease';
     loader.style.opacity = '0';
+    loader.style.pointerEvents = 'none';
     setTimeout(() => {
       loader.style.display = 'none';
+      
+      // Force enable scroll - multiple methods
+      document.body.style.overflow = 'visible';
+      document.body.style.overflowY = 'auto';
+      document.body.style.height = 'auto';
+      document.documentElement.style.overflow = 'visible';
+      document.documentElement.style.overflowY = 'auto';
+      
+      // Remove any inline styles blocking scroll
+      document.body.removeAttribute('style');
+      
+      console.log('✅ Scroll unlocked successfully');
     }, 500);
-  }, 1000); // Keep a delay for data to populate
+  }
+}, 1000);
 
-  // Trigger 3D tilt effect
-  init3DTilt();
-}
+
+// Trigger 3D tilt effect
+init3DTilt();
+} // <--- This closes populateData function
+
+// ✅ Make sure this line is below populateData()
+
 
 // Populate Orbital Icons
 function populateOrbitalIcons(icons) {
@@ -601,23 +736,411 @@ function initContactForm() {
   const btnLoader = document.getElementById('btn-loader');
   
   if (!form) {
-    console.error('Contact form not found!');
+    console.error("Contact form not found!");
     return;
   }
-
-  // Show loading state when form submits
-  form.addEventListener('submit', function(e) {
+  
+  // 🔹 IMPROVED: Handle form submission with AJAX
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault(); // ✅ Stop page reload
+    
     // Show loading state
     btnText.style.display = 'none';
     btnLoader.style.display = 'inline';
     submitBtn.disabled = true;
     
-    console.log('📤 Form submitting to Web3Forms...');
-    // Let form submit naturally (don't prevent default)
+    console.log("Form submitting to Web3Forms...");
+    
+    try {
+      // Get form data
+      const formData = new FormData(form);
+      
+      // Submit form via fetch
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // ✅ Success message
+        showFormMessage('✅ Message sent successfully! I\'ll get back to you soon.', 'success');
+        form.reset(); // Clear form fields
+      } else {
+        // ❌ Error message
+        showFormMessage('❌ Failed to send message. Please try again or email me directly.', 'error');
+      }
+      
+    } catch (error) {
+      console.error('Form submission error:', error);
+      showFormMessage('❌ Something went wrong. Please email me at fardinwork26@gmail.com', 'error');
+    } finally {
+      // Reset button state
+      btnText.style.display = 'inline';
+      btnLoader.style.display = 'none';
+      submitBtn.disabled = false;
+    }
+  });
+  
+  console.log("Contact form initialized with AJAX submission");
+}
+
+// 🔹 NEW: Helper function to show success/error messages
+function showFormMessage(message, type) {
+  // Remove any existing message
+  const existingMsg = document.querySelector('.form-message');
+  if (existingMsg) {
+    existingMsg.remove();
+  }
+  
+  // Create message element
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'form-message';
+  messageDiv.textContent = message;
+  
+  // Style based on type
+  const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+  const borderColor = type === 'success' ? '#10b981' : '#ef4444';
+  const textColor = type === 'success' ? '#065f46' : '#991b1b';
+  
+  messageDiv.style.cssText = `
+    background: ${bgColor};
+    border: 2px solid ${borderColor};
+    color: ${textColor};
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    animation: slideIn 0.3s ease;
+  `;
+  
+  // Insert after form
+  const form = document.getElementById('contact-form');
+  form.parentNode.insertBefore(messageDiv, form.nextSibling);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    messageDiv.style.transition = 'opacity 0.3s ease';
+    messageDiv.style.opacity = '0';
+    setTimeout(() => messageDiv.remove(), 300);
+  }, 5000);
+}
+
+
+// --- NEW: CHATBOT LOGIC ---
+function initChatbot() {
+  const toggler = document.getElementById('chatbot-toggler');
+  const windowEl = document.getElementById('chatbot-window');
+  const closeBtn = document.getElementById('chat-close-btn');
+  const sendBtn = document.getElementById('chat-send-btn');
+  const inputEl = document.getElementById('chat-input');
+  const chatLog = document.getElementById('chat-log');
+
+  if (!toggler || !windowEl || !closeBtn || !sendBtn || !inputEl || !chatLog) {
+    console.warn('Chatbot elements not found. Chatbot will not initialize.');
+    return;
+  }
+
+  // --- GLOBAL CHATBOT RESPONSE FUNCTION (Re-Added) ---
+function getBotResponse(userInput) {
+  const input = userInput.toLowerCase().trim();
+  
+  // 🔹 Direct keyword mapping (most common queries)
+  const directKeywords = {
+    'skills': 'key_skills',
+    'skill': 'key_skills',
+    'abilities': 'key_skills',
+    'expertise': 'key_skills',
+    'excel': 'key_skills',
+    'sql': 'key_skills',
+    
+    'experience': 'experience_summary',
+    'work': 'experience_summary',
+    'job': 'experience_summary',
+    'career': 'experience_summary',
+    'employment': 'experience_summary',
+    
+    'projects': 'projects',
+    'project': 'projects',
+    'portfolio': 'projects',
+    'automation': 'projects',
+    
+    'education': 'education',
+    'qualification': 'education',
+    'degree': 'education',
+    'study': 'education',
+    
+    'contact': 'contact',
+    'email': 'contact',
+    'phone': 'contact',
+    'linkedin': 'contact',
+    
+    'hobbies': 'hobbies',
+    'hobby': 'hobbies',
+    'interests': 'hobbies',
+    
+    'about': 'about_fardin',
+    'fardin': 'about_fardin',
+    'yourself': 'about_fardin',
+    'summary': 'about_fardin',
+    
+    'current': 'current_role',
+    'outlander': 'current_role',
+    
+    'hi': 'greeting',
+    'hello': 'greeting',
+    'hey': 'greeting',
+    
+    'bye': 'goodbye',
+    'thanks': 'goodbye',
+    'thank': 'goodbye'
+  };
+
+  // Check direct keywords first
+  for (const keyword in directKeywords) {
+    if (input.includes(keyword)) {
+      const intent = CHATBOT_INTENTS.intents.find(i => i.tag === directKeywords[keyword]);
+      if (intent) {
+        return selectResponse(intent);
+      }
+    }
+  }
+
+  // 🔹 Advanced pattern matching
+  let bestMatch = null;
+  let highestScore = 0;
+
+  for (const intent of CHATBOT_INTENTS.intents) {
+    for (const pattern of intent.patterns) {
+      const lowerPattern = pattern.toLowerCase();
+      let score = 0;
+      
+      // Exact match = highest priority
+      if (input === lowerPattern) {
+        score = 100;
+      }
+      // Pattern contains input or input contains pattern
+      else if (input.includes(lowerPattern) || lowerPattern.includes(input)) {
+        score = 50;
+      }
+      // Word-by-word matching
+      else {
+        const inputWords = input.split(' ').filter(w => w.length > 2);
+        const patternWords = lowerPattern.split(' ').filter(w => w.length > 2);
+        
+        for (const word of inputWords) {
+          if (patternWords.includes(word)) {
+            score += 10;
+          }
+        }
+      }
+      
+      if (score > highestScore) {
+        highestScore = score;
+        bestMatch = intent;
+      }
+    }
+  }
+
+  // 🔹 Return best match or fallback
+  if (bestMatch && highestScore >= 10) {
+    return selectResponse(bestMatch);
+  } else {
+    const fallback = CHATBOT_INTENTS.intents.find(i => i.tag === 'fallback');
+    return selectResponse(fallback);
+  }
+}
+
+// Helper function to select random response and add suggestions
+function selectResponse(intent) {
+  const responses = intent.responses;
+  const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+  
+  return {
+    text: randomResponse,
+    tag: intent.tag,
+    suggestions: intent.suggestions || []
+  };
+}
+
+
+
+  // --- Safe Scroll Fix ---
+  let isPointerOverChat = false;
+
+  windowEl.addEventListener('mouseenter', () => { isPointerOverChat = true; });
+  windowEl.addEventListener('mouseleave', () => { isPointerOverChat = false; });
+
+  chatLog.addEventListener('wheel', (e) => {
+    if (!isPointerOverChat) return;
+    const atTop = chatLog.scrollTop === 0;
+    const atBottom = Math.ceil(chatLog.scrollTop + chatLog.clientHeight) >= chatLog.scrollHeight;
+    if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) return;
+    e.stopPropagation();
+  }, { passive: false });
+
+  // --- Open / Close Chatbot ---
+  toggler.addEventListener('click', () => {
+    windowEl.classList.toggle('active');
+    if (windowEl.classList.contains('active')) {
+      inputEl.focus();
+    } else {
+      isPointerOverChat = false;
+    }
   });
 
-  console.log('✅ Contact form initialized - native HTML submission (no CORS)');
+  closeBtn.addEventListener('click', () => {
+    windowEl.classList.remove('active');
+    isPointerOverChat = false;
+  });
+
+  // --- Send Message ---
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function sendMessage() {
+  const messageText = inputEl.value.trim();
+  if (!messageText) return;
+  
+  // Show user message
+  addMessageToLog(messageText, 'user');
+  inputEl.value = '';
+  
+  // Get bot response after delay
+  setTimeout(() => {
+    const botResponse = getBotResponse(messageText);
+    addMessageToLog(botResponse.text, 'bot');
+    
+    // Show smart suggestions based on response tag
+    if (botResponse.tag && botResponse.tag !== 'fallback') {
+      const suggestionsMap = {
+        'greeting': ["Tell me about Fardin", "Show me his skills", "What's his experience?"],
+        'about_fardin': ["What are his key skills?", "Show his projects", "What's his education?"],
+        'key_skills': ["Tell me about his current job", "Show his experience", "What projects has he built?"],
+        'current_role': ["What are his skills?", "Show his previous roles", "Tell me about his projects"],
+        'experience_summary': ["What's his education?", "Show his skills", "Tell me his hobbies"],
+        'education': ["What are his skills?", "Show his work experience", "How can I contact him?"],
+        'projects': ["What are his key skills?", "Tell me about his education", "How can I contact him?"],
+        'contact': ["Show his skills", "Tell me about his projects", "What's his experience?"],
+        'hobbies': ["Tell me about his skills", "Show his projects", "What's his work experience?"],
+        'goodbye': []
+      };
+      
+      const suggestions = suggestionsMap[botResponse.tag] || ["Show his skills", "Show his experience", "Tell me about his projects"];
+      
+      if (suggestions.length > 0) {
+        showSuggestions(suggestions);
+      }
+    }
+  }, 500);
 }
+
+
+  function addMessageToLog(message, sender) {
+    const messageEl = document.createElement('div');
+    messageEl.className = `chat-message ${sender}-message`;
+    const p = document.createElement('p');
+    p.textContent = message;
+    messageEl.appendChild(p);
+    chatLog.appendChild(messageEl);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function showSuggestions(suggestions) {
+  const suggestionBox = document.createElement('div');
+  suggestionBox.className = 'chat-suggestions';
+  suggestionBox.style.display = 'flex';
+  suggestionBox.style.flexWrap = 'wrap';
+  suggestionBox.style.gap = '8px';
+  suggestionBox.style.marginTop = '12px';
+  suggestionBox.style.padding = '0 8px';
+
+  suggestions.forEach(text => {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.className = 'suggestion-btn';
+    btn.style.cssText = `
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    `;
+    
+    // Hover effects
+    btn.onmouseenter = () => {
+      btn.style.transform = 'translateY(-2px)';
+      btn.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+    };
+    btn.onmouseleave = () => {
+      btn.style.transform = 'translateY(0)';
+      btn.style.boxShadow = '0 2px 8px rgba(102, 126, 234, 0.3)';
+    };
+    
+    // Click handler
+    btn.addEventListener('click', () => {
+      // Send suggestion as user message
+      addMessageToLog(text, 'user');
+      
+      // Get bot response
+      const botResponse = getBotResponse(text);
+      addMessageToLog(botResponse.text, 'bot');
+      
+      // Remove old suggestions
+      suggestionBox.remove();
+      
+      // Show new suggestions
+      if (botResponse.tag && botResponse.tag !== 'fallback') {
+        const suggestionsMap = {
+          'greeting': ["Tell me about Fardin", "Show me his skills", "What's his experience?"],
+          'about_fardin': ["What are his key skills?", "Show his projects", "What's his education?"],
+          'key_skills': ["Tell me about his current job", "Show his experience", "What projects has he built?"],
+          'current_role': ["What are his skills?", "Show his previous roles", "Tell me about his projects"],
+          'experience_summary': ["What's his education?", "Show his skills", "Tell me his hobbies"],
+          'education': ["What are his skills?", "Show his work experience", "How can I contact him?"],
+          'projects': ["What are his key skills?", "Tell me about his education", "How can I contact him?"],
+          'contact': ["Show his skills", "Tell me about his projects", "What's his experience?"],
+          'hobbies': ["Tell me about his skills", "Show his projects", "What's his work experience?"],
+          'goodbye': []
+        };
+        
+        const newSuggestions = suggestionsMap[botResponse.tag] || ["Show his skills", "Show his experience"];
+        
+        if (newSuggestions.length > 0) {
+          showSuggestions(newSuggestions);
+        }
+      }
+    });
+    
+    suggestionBox.appendChild(btn);
+  });
+
+  chatLog.appendChild(suggestionBox);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+
+  console.log('✅ Chatbot initialized successfully');
+}
+
+
+// --- END CHATBOT LOGIC ---
 
 
 // Mobile menu
@@ -651,7 +1174,7 @@ function showError(error) {
   } else if (errorMessage.includes('Sheet named')) {
     errorMessage = '<b>Error:</b> ' + errorMessage + '<br>Please check your Google Sheet structure.';
   } else if (errorMessage.includes('HTTP error')) {
-    errorMessage = `<b>Error:</b> Could not load sheet data.<br>Please ensure your sheet is published to the web (see README.md).<br><small>${error.message}</small>`;
+    errorMessage = `<b>Error:</b> Could not load sheet data.<br>Please ensure your sheet is published to the aweb (see README.md).<br><small>${error.message}</small>`;
   }
   
   // Display error message
@@ -687,4 +1210,9 @@ function handleResponsive() {
 window.addEventListener('resize', handleResponsive);
 handleResponsive();
 
-
+window.addEventListener('load', () => {
+  document.body.style.overflowY = 'auto';
+});
+window.addEventListener('load', () => {
+  document.body.style.overflowY = 'auto';
+});
