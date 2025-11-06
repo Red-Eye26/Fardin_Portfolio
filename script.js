@@ -383,19 +383,20 @@ function populateData(data) {
   // --- End of Experience Timeline ---
 
   // Services
-  if (data.services && data.services.length > 0) {
-    const servicesContainer = document.getElementById('services-container');
-    servicesContainer.innerHTML = data.services.map(service => `
-      <div class="glass-card tilt-card" style="padding: 40px; text-align: center;">
-        <img src="${service.photo || 'https://placehold.co/100x100/667eea/ffffff?text=Icon'}" 
-             alt="${service.name}" 
-             style="width: 80px; height: 80px; object-fit: contain; margin: 0 auto 20px; border-radius: 50%; background: rgba(102, 126, 234, 0.1); padding: 15px;"
-             onerror="this.src='https://placehold.co/100x100/667eea/ffffff?text=Icon'">
-        <h3 style="font-size: 1.3rem; font-weight: 700; color: #1a1a1a; margin-bottom: 12px;">${service.name}</h3>
-        <p style="color: #6b7280; line-height: 1.6;">${service.description || ''}</p>
-      </div>
-    `).join('');
-  }
+if (data.services && data.services.length > 0) {
+  const servicesContainer = document.getElementById('services-container');
+  servicesContainer.innerHTML = data.services.map(service => `
+    <div class="glass-card tilt-card" style="padding: 40px; text-align: center;">
+      <img src="${service.photo || 'https://placehold.co/100x100/667eea/ffffff?text=Icon'}" 
+           alt="${service.name}" 
+           style="width: 64px; height: 64px; object-fit: contain; margin: 0 auto 20px; background: transparent; border-radius: 0; padding: 0;"
+           onerror="this.src='https://placehold.co/100x100/667eea/ffffff?text=Icon'">
+      <h3 style="font-size: 1.3rem; font-weight: 700; color: #1a1a1a; margin-bottom: 12px;">${service.name}</h3>
+      <p style="color: #6b7280; line-height: 1.6;">${service.description || ''}</p>
+    </div>
+  `).join('');
+}
+
 
   // Projects
   if (data.projects && Array.isArray(data.projects) && data.projects.length > 0) {
