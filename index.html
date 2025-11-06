@@ -17,8 +17,218 @@
   <!-- Typed.js (for hero animation) -->
   <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
+  <!-- NEW: Spline 3D Viewer Script -->
+  <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- NEW: Custom Styles for Chatbot, Spline, and Fixes -->
+  <style>
+    /* Spline 3D Model Background */
+    #spline-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2; /* Above gradient/grid, below content */
+      opacity: 0.4;
+      pointer-events: none; /* Make it non-interactive */
+    }
+
+    /* Ensure hero content and scroll indicator are above Spline */
+    #home > div[style*="z-index: 10"] {
+      z-index: 3 !important; /* Use !important to override inline style */
+    }
+    .scroll-indicator {
+      z-index: 3;
+    }
+
+    /* --- Chatbot Styles --- */
+    #chatbot-toggler {
+      position: fixed;
+      bottom: 30px;
+      left: 30px; /* Changed from right to avoid CTA */
+      z-index: 1000;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+    #chatbot-toggler:hover {
+      transform: scale(1.1);
+    }
+    #chatbot-toggler svg {
+      width: 30px;
+      height: 30px;
+      stroke: white;
+    }
+
+    #chatbot-window {
+      position: fixed;
+      bottom: 100px;
+      left: 30px;
+      width: 350px;
+      max-width: 90vw;
+      height: 450px;
+      max-height: 70vh;
+      z-index: 999;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      /* Glass card styles */
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+      /* Hide by default */
+      opacity: 0;
+      transform: translateY(20px);
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    #chatbot-window.active {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    #chat-header {
+      padding: 15px 20px;
+      background: rgba(245, 245, 245, 0.8);
+      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0; /* Prevent header from shrinking */
+    }
+    #chat-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+    }
+    #chat-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    #chat-log {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      /* Custom scrollbar for chat */
+      scrollbar-width: thin;
+      scrollbar-color: #667eea #f1f1f1;
+    }
+    #chat-log::-webkit-scrollbar {
+      width: 6px;
+    }
+    #chat-log::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    #chat-log::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 10px;
+    }
+
+    .chat-message {
+      padding: 12px 18px;
+      border-radius: 18px;
+      max-width: 85%; /* Slightly more room */
+      line-height: 1.5;
+      font-size: 0.95rem;
+      word-wrap: break-word; /* Handle long words */
+    }
+    .bot-message {
+      background: #f3f4f6;
+      color: #1a1a1a;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    .user-message {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+    .chat-message p {
+      margin: 0;
+      white-space: pre-wrap; /* To respect newlines from the JSON */
+    }
+
+    #chat-input-area {
+      padding: 15px;
+      border-top: 1px solid rgba(102, 126, 234, 0.1);
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0; /* Prevent input from shrinking */
+    }
+    #chat-input {
+      flex-grow: 1;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      background: #ffffff;
+      transition: all 0.3s;
+      font-family: 'Host Grotesk', sans-serif;
+    }
+    #chat-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    #chat-send-btn {
+      background: #667eea;
+      border: none;
+      border-radius: 10px;
+      padding: 0 12px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    #chat-send-btn:hover {
+      background: #5a6ecf;
+    }
+
+    /* Responsive Chatbot */
+    @media (max-width: 480px) {
+      #chatbot-window {
+        left: 10px;
+        right: 10px;
+        width: auto;
+        bottom: 80px;
+        height: 50vh; /* Adjust height on mobile */
+      }
+      #chatbot-toggler {
+        bottom: 20px;
+        left: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Loader -->
@@ -31,9 +241,6 @@
           <span></span>
           <div class="face"></div>
         </div>
-      </div>
-      <div class="longfazers">
-        <span></span><span></span><span></span><span></span>
       </div>
     </div>
     <div class="loader-text-title">Portfolio</div>
@@ -85,6 +292,9 @@
 
   <!-- Hero Section -->
   <section id="home" style="display: flex; align-items: center; justify-content: center; position: relative;">
+    <!-- NEW: Spline 3D Model -->
+    <spline-viewer id="spline-bg" url="https://prod.spline.design/FVZWbQH2B6ndj9UU/scene.splinecode" events-target="global"></spline-viewer>
+
     <div class="hero-gradient"></div>
     <div class="grid-pattern"></div>
     
@@ -107,8 +317,10 @@
           <a href="#projects" class="ripple-button" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 16px 35px; border-radius: 50px; color: white; font-weight: 600; text-decoration: none; display: inline-block; box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);">
             View My Work
           </a>
-          <a href="#contact" class="ripple-button" style="background: white; padding: 16px 35px; border-radius: 50px; color: #667eea; font-weight: 600; text-decoration: none; display: inline-block; border: 2px solid #667eea;">
-            Get in Touch
+          <!-- UPDATED: "Get in Touch" button replaced with "Download Resume" -->
+          <a id="hero-resume-btn" href="#" class="ripple-button" style="background: white; padding: 16px 35px; border-radius: 50px; color: #667eea; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; border: 2px solid #667eea;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download Resume
           </a>
         </div>
       </div>
@@ -204,7 +416,8 @@
         <div style="color: #667eea; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">What I Do</div>
         <h2 style="font-size: 3rem; font-weight: 800; color: #1a1a1a;">My Services</h2>
       </div>
-      <div id="services-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+      <!-- UPDATED: Grid columns minmax changed to 250px to allow for 4 columns -->
+      <div id="services-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
         <!-- Will be populated from sheet -->
       </div>
     </div>
@@ -288,58 +501,83 @@
 
         
         <form action="https://api.web3forms.com/submit" method="POST" id="contact-form">
-  <!-- Hidden fields for Web3Forms -->
-  <input type="hidden" name="access_key" value="96429bb0-512d-4cd9-8851-af9ad79fe6d1">
-  <input type="hidden" name="subject" value="New Message from Portfolio Contact Form">
-  <input type="hidden" name="from_name" value="Portfolio Website">
-  
-  <!-- Redirect back to your contact section after submission -->
-  <input type="hidden" name="redirect" value="https://red-eye26.github.io/Fardin_Portfolio/#contact">
+          <!-- Hidden fields for Web3Forms -->
+          <input type="hidden" name="access_key" value="96429bb0-512d-4cd9-8851-af9ad79fe6d1">
+          <input type="hidden" name="subject" value="New Message from Portfolio Contact Form">
+          <input type="hidden" name="from_name" value="Portfolio Website">
+          
+          <!-- Redirect back to your contact section after submission -->
+          <input type="hidden" name="redirect" value="https://red-eye26.github.io/Fardin_Portfolio/#contact">
 
-  <div id="form-wrapper">
-    <div class="form-group">
-      <input type="text" id="name" name="name" required placeholder=" " class="form-input">
-      <label for="name" class="form-label">Your Name</label>
-    </div>
-    <div class="form-group">
-      <input type="email" id="email" name="email" required placeholder=" " class="form-input">
-      <label for="email" class="form-label">Your Email</label>
-    </div>
-    <div class="form-group">
-      <textarea id="message" name="message" rows="5" required placeholder=" " class="form-input"></textarea>
-      <label for="message" class="form-label">Your Message</label>
-    </div>
+          <div id="form-wrapper">
+            <div class="form-group">
+              <input type="text" id="name" name="name" required placeholder=" " class="form-input">
+              <label for="name" class="form-label">Your Name</label>
+            </div>
+            <div class="form-group">
+              <input type="email" id="email" name="email" required placeholder=" " class="form-input">
+              <label for="email" class="form-label">Your Email</label>
+            </div>
+            <div class="form-group">
+              <textarea id="message" name="message" rows="5" required placeholder=" " class="form-input"></textarea>
+              <label for="message" class="form-label">Your Message</label>
+            </div>
 
-    <button type="submit" id="submit-btn" class="ripple-button"
-      style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); padding: 18px; border-radius: 12px; color: white; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s;">
-      <span id="btn-text">Send Message</span>
-      <span id="btn-loader" style="display: none;">Sending...</span>
-    </button>
+            <button type="submit" id="submit-btn" class="ripple-button"
+              style="width: 100%; background: linear-gradient(135deg, #667eea, #764ba2); padding: 18px; border-radius: 12px; color: white; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.3s;">
+              <span id="btn-text">Send Message</span>
+              <span id="btn-loader" style="display: none;">Sending...</span>
+            </button>
 
-    <!-- Status message -->
-    <div id="status-message" style="display: none; text-align:center; margin-top:15px; font-weight:500;"></div>
-  </div>
+            <!-- Status message -->
+            <div id="status-message" style="display: none; text-align:center; margin-top:15px; font-weight:500;"></div>
+          </div>
 
-  <!-- Success State (won't be used with native submission, but keeping for future) -->
-  <div id="success-state" style="display: none; text-align: center; padding: 20px;">
-    <div
-      style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-    </div>
-    <h3 style="font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px;">Message Sent!</h3>
-    <p style="color: #6b7280; margin-bottom: 25px;">Thank you for reaching out. I'll get back to you soon.</p>
-    <button id="reset-btn" class="ripple-button"
-      style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 12px 30px; border-radius: 50px; color: white; font-weight: 600; border: none; cursor: pointer;">
-      Send Another Message
-    </button>
-  </div>
-</form>
+          <!-- Success State (won't be used with native submission, but keeping for future) -->
+          <div id="success-state" style="display: none; text-align: center; padding: 20px;">
+            <div
+              style="width: 80px; height: 80px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px;">Message Sent!</h3>
+            <p style="color: #6b7280; margin-bottom: 25px;">Thank you for reaching out. I'll get back to you soon.</p>
+            <button id="reset-btn" class="ripple-button"
+              style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 12px 30px; border-radius: 50px; color: white; font-weight: 600; border: none; cursor: pointer;">
+              Send Another Message
+            </button>
+          </div>
+        </form>
 
       </div>
     </div>
   </section>
+
+  <!-- NEW: Chatbot -->
+  <div id="chatbot-toggler">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  </div>
+
+  <div id="chatbot-window">
+    <div id="chat-header">
+      <h3>Fardin's Assistant</h3>
+      <button id="chat-close-btn">&times;</button>
+    </div>
+    <div id="chat-log">
+      <div class="chat-message bot-message">
+        <p>Hello! I'm Fardin's assistant bot. How can I help you today?</p>
+      </div>
+    </div>
+    <div id="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Ask about skills, projects...">
+      <button id="chat-send-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
+  </div>
+  <!-- End Chatbot -->
+
 
   <!-- Footer -->
   <footer style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(240, 147, 251, 0.05)); padding: 60px 20px 30px; margin-top: 100px;">
@@ -374,5 +612,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
