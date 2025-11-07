@@ -565,11 +565,14 @@ section#home > div[style*="z-index: 10"] {
 
 
 /* Mobile Responsive */
+/* ===== COMPLETE MOBILE RESPONSIVE - CLEAN VERSION ===== */
 @media (max-width: 768px) {
+  /* Typography */
   .counter {
     font-size: 2rem;
   }
   
+  /* Navigation */
   nav {
     display: none;
   }
@@ -578,60 +581,148 @@ section#home > div[style*="z-index: 10"] {
     display: block !important;
   }
   
+  /* Floating CTA */
   .floating-cta {
     bottom: 20px;
     right: 20px;
   }
   
-  /* Responsive Timeline */
-  .timeline-container::after {
-      left: 25px;
+  /* === HERO SECTION === */
+  #home > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
   }
-  .timeline-item {
-      width: 100%;
-      padding-left: 70px;
-      padding-right: 0;
-      text-align: left;
+  
+  #home > div > div:first-child {
+    text-align: center !important;
+    order: 1;
   }
-  .timeline-item:nth-child(odd) {
-      left: 0;
-      padding-right: 0;
-      text-align: left;
+  
+  #home div[style*="display: flex"][style*="gap: 15px"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 15px !important;
   }
-  .timeline-item:nth-child(even) {
-      left: 0;
-      padding-left: 70px;
+  
+  #home h1 {
+    font-size: 2.5rem !important;
   }
-  .timeline-icon {
-      left: 0;
+  
+  #home div[style*="font-size: 1.5rem"] {
+    font-size: 1.2rem !important;
   }
-  .timeline-item:nth-child(odd) .timeline-icon {
-      left: 0;
-  }
-  .timeline-item:nth-child(even) .timeline-icon {
-      left: 0;
-  }
-
-  /* Responsive Hero */
-  #home div[style*="grid-template-columns"] {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  #home div[style*="text-align: left"] {
-    text-align: center;
-  }
-  #home div[style*="display: flex"] {
+  
+  #hero-animation-container {
+    order: 2;
+    margin-top: 40px;
+    display: flex;
     justify-content: center;
   }
-  #hero-animation-container {
-    margin-top: 40px;
+  
+  #profile-image {
+    width: 160px !important;
+    height: 160px !important;
+    margin: 0 auto;
   }
-
-  /* Responsive Contact */
-  section#contact div[style*="grid-template-columns"] {
-    grid-template-columns: 1fr;
+  
+  #orbital-icons-container {
+    width: 300px !important;
+    height: 300px !important;
+  }
+  
+  /* === CONTACT SECTION === */
+  section#contact > div > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  
+  section#contact > div > div[style*="grid-template-columns"] > div:first-child {
+    order: 2;
+  }
+  
+  section#contact > div > div[style*="grid-template-columns"] > form {
+    order: 1;
+  }
+  
+  section#contact h2 {
+    font-size: 2rem !important;
+  }
+  
+  section#contact h3 {
+    font-size: 1.3rem !important;
+  }
+  
+  /* === TIMELINE === */
+  .timeline-container::after {
+    left: 25px;
+  }
+  
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 0;
+    text-align: left;
+  }
+  
+  .timeline-item:nth-child(odd) {
+    left: 0;
+    padding-right: 0;
+    text-align: left;
+  }
+  
+  .timeline-item:nth-child(even) {
+    left: 0;
+    padding-left: 70px;
+  }
+  
+  .timeline-icon {
+    left: 0;
+  }
+  
+  .timeline-item:nth-child(odd) .timeline-icon,
+  .timeline-item:nth-child(even) .timeline-icon {
+    left: 0;
+  }
+  
+  /* === PERFORMANCE === */
+  #spline-bg {
+    display: none !important;
+  }
+  
+  .particle,
+  #particles-container {
+    display: none !important;
+  }
+  
+  .orbit-icon {
+    animation-duration: 40s;
+  }
+  
+  .hero-gradient {
+    animation: none;
+  }
+  
+  .glass-card,
+  nav,
+  #chatbot-window {
+    backdrop-filter: blur(5px);
+  }
+  
+  /* === ENSURE SECTIONS VISIBLE === */
+  section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
+
+
 
 /* --- NEW Loader --- */
 .loader-overlay {
@@ -854,56 +945,74 @@ section#home > div[style*="z-index: 10"] {
 } */
 
 /* Buttons used by projects (script injects .btn) */
-/* Buttons used by projects - IMPROVED */
+/* ===== PROJECT BUTTONS - BULLETPROOF FIX ===== */
+
+/* Base button styles */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px; /* Reduced gap */
-  padding: 10px 16px; /* More horizontal padding */
+  gap: 6px;
+  padding: 10px 16px;
   border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 14px; /* Fixed font size */
-  color: #ffffff;
+  font-size: 14px;
+  color: #ffffff !important;
   background: linear-gradient(135deg, #667eea, #764ba2);
   border: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  white-space: nowrap; /* Prevent text wrap */
-  min-height: 42px; /* Fixed height */
-  line-height: 1; /* Tight line height */
+  white-space: nowrap;
+  min-height: 42px;
+  line-height: 1;
 }
 
+/* Hover state */
 .btn:hover { 
-  transform: translateY(-4px); 
-  box-shadow: 0 10px 30px rgba(102,126,234,0.18); 
+  transform: translateY(-3px); 
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15); 
 }
 
 .btn:active { 
-  transform: translateY(-2px); 
+  transform: translateY(-1px); 
 }
 
-/* Variant styles */
-.project-btn { 
-  background: linear-gradient(135deg,#4f46e5,#7c3aed); 
+/* Button color variants - MUST OVERRIDE */
+a.project-btn,
+button.project-btn,
+.project-btn {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  color: #ffffff !important;
 }
 
-.video-btn { 
-  background: linear-gradient(135deg,#0ea5e9,#06b6d4); 
+a.video-btn,
+button.video-btn,
+.video-btn {
+  background: linear-gradient(135deg, #0ea5e9, #06b6d4) !important;
+  color: #ffffff !important;
 }
 
-.guide-btn { 
-  background: linear-gradient(135deg,#10b981,#059669); 
+a.guide-btn,
+button.guide-btn,
+.guide-btn {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #ffffff !important;
 }
 
-.btn:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(102,126,234,0.18); }
-.btn:active { transform: translateY(-2px); }
+/* Ensure button colors work on hover too */
+.project-btn:hover {
+  background: linear-gradient(135deg, #4338ca, #6b21a8) !important;
+}
 
-/* Variant styles */
-.project-btn { background: linear-gradient(135deg,#4f46e5,#7c3aed); }
-.video-btn { background: linear-gradient(135deg,#0ea5e9,#06b6d4); }
-.guide-btn { background: linear-gradient(135deg,#10b981,#059669); }
+.video-btn:hover {
+  background: linear-gradient(135deg, #0284c7, #0891b2) !important;
+}
+
+.guide-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+}
+
 
 /* Chatbot small improvements (some layout was inline; reinforce here) */
 #chatbot-toggler { transition: transform .18s ease, box-shadow .18s ease; }
@@ -1021,4 +1130,124 @@ section {
 .service-card img:hover {
   transform: scale(1.08);
   transition: transform 0.3s ease;
+}
+
+/* ===== MOBILE PERFORMANCE OPTIMIZATION ===== */
+
+
+
+/* GPU Acceleration (All devices) */
+.project-card,
+.glass-card,
+.btn,
+.orbit-icon,
+.timeline-content {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Smooth scrolling for touch devices */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
+/* Prevent text selection lag on mobile */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  
+  /* Allow text selection only where needed */
+  p, h1, h2, h3, h4, h5, h6, span, div {
+    user-select: text;
+  }
+}
+
+/* ===== SAFE MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+  /* 1. Hide heavy 3D elements */
+  #spline-bg {
+    display: none !important;
+  }
+  
+  /* 2. Hide particles */
+  .particle,
+  #particles-container {
+    display: none !important;
+  }
+  
+  /* 3. Simplify animations - SPECIFIC SELECTORS ONLY */
+  .orbit-icon {
+    animation-duration: 40s;
+  }
+  
+  .hero-gradient {
+    animation: none;
+  }
+  
+  /* 4. Reduce blur - SPECIFIC ELEMENTS */
+  .glass-card {
+    backdrop-filter: blur(5px);
+  }
+  
+  nav {
+    backdrop-filter: blur(8px);
+  }
+  
+  #chatbot-window {
+    backdrop-filter: blur(8px);
+  }
+  
+  /* 5. Simplify shadows - SPECIFIC ELEMENTS */
+  .glass-card,
+  .project-card {
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.08);
+  }
+  
+  nav {
+    box-shadow: 0 2px 15px rgba(102, 126, 234, 0.1);
+  }
+  
+  /* 6. Disable specific hover effects that cause issues */
+  .glass-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  
+  .project-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  /* 7. Ensure sections are visible */
+  section {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  /* 8. Ensure About/Contact sections render */
+  section#about,
+  section#contact {
+    min-height: auto !important;
+    display: block !important;
+  }
+}
+
+/* Smooth scroll for touch */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+}
+
+/* GPU acceleration - SPECIFIC ELEMENTS */
+.project-card,
+.glass-card,
+.timeline-content {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
