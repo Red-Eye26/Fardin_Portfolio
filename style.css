@@ -1170,10 +1170,12 @@ body {
 
 /* ===== SAFE MOBILE OPTIMIZATION ===== */
 @media (max-width: 768px) {
-  /* 1. Hide heavy 3D elements */
-  #spline-bg {
+  /* === PERFORMANCE === */
+  #spline-bg,
+  #experience-spline-wrapper {
     display: none !important;
   }
+
   
   /* 2. Hide particles */
   .particle,
@@ -1250,4 +1252,17 @@ body {
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* 🔥 BULLETPROOF MOBILE SCROLL */
+@media (max-width: 768px) {
+  html, body {
+    overflow-y: scroll !important;
+    height: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  #chatbot-window:not(.active) {
+    pointer-events: none !important;
+  }
 }
