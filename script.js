@@ -162,13 +162,32 @@ let typingInstance;
 
 // Initialize on page load
 window.addEventListener('load', function() {
-  console.log('Page loaded. Starting initialization...');
-
-  // Initialize Lenis Smooth Scroll
-  lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+  console.log('🔥 Portfolio - Bulletproof Scroll Init');
+  
+  // FORCE SCROLL ENABLE FIRST
+  ['html', 'body'].forEach(tag => {
+    document.querySelector(tag).style.overflowY = 'auto !important';
   });
+  
+  // LENIS - DESKTOP ONLY (>768px)
+  if (window.innerWidth > 768 && !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothTouch: false,     // ❌ MOBILE DISABLED
+      touchMultiplier: 0      // ❌ ZERO TOUCH EFFECT
+    });
+    
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    console.log('✅ Lenis: Desktop Smooth Scroll Active');
+  } else {
+    console.log('✅ Native: Mobile/Tablet Scroll Active');
+  }
+
   document.body.style.overflowY = 'auto'; // ✅ Force enable scroll on load
 
   
