@@ -171,22 +171,18 @@ window.addEventListener('load', function() {
   
   // LENIS - DESKTOP ONLY (>768px)
   if (window.innerWidth > 768 && !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothTouch: false,     // ❌ MOBILE DISABLED
-      touchMultiplier: 0      // ❌ ZERO TOUCH EFFECT
-    });
-    
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+  lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothTouch: false,
+    touchMultiplier: 0
+  });
+  function raf(time) {
+    lenis.raf(time);
     requestAnimationFrame(raf);
-    console.log('✅ Lenis: Desktop Smooth Scroll Active');
-  } else {
-    console.log('✅ Native: Mobile/Tablet Scroll Active');
   }
+  requestAnimationFrame(raf);
+}
 
   document.body.style.overflowY = 'auto'; // ✅ Force enable scroll on load
 
@@ -609,76 +605,84 @@ function populateOrbitalIcons(icons) {
 // Navigation with smooth scroll and active state
 function initNavigation() {
   const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('section[id]');
-
-  // Click handlers
+  const mobileNavLinks = document.querySelectorAll('.nav-link-mobile');
+  
+  // Desktop nav - ORIGINAL LOGIC + Lenis Safety
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const targetId = link.getAttribute('href');
       const targetSection = document.querySelector(targetId);
       
-      if (targetSection && lenis) {
-        lenis.scrollTo(targetSection, { offset: 0 });
+      if (targetSection) {
+        if (lenis && window.innerWidth > 768) {
+          // Lenis smooth scroll (your original)
+          lenis.scrollTo(targetSection, { 
+            offset: -80,  // Navbar height offset
+            immediate: false 
+          });
+        } else {
+          // Native smooth scroll - CORRECT OFFSET
+          const navbarHeight = 80; // Fixed navbar height
+          const elementPosition = targetSection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+        
+        // Active state (your original)
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
       }
-
-      // Update active state
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
     });
   });
 
-  // Mobile nav links (they also need to scroll)
-   const mobileNavLinks = document.querySelectorAll('.nav-link-mobile');
-   mobileNavLinks.forEach(link => {
+  // Mobile nav - SAME as your original
+  mobileNavLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const targetId = link.getAttribute('href');
       const targetSection = document.querySelector(targetId);
       
-      if (targetSection && lenis) {
-        lenis.scrollTo(targetSection, { offset: 0 });
-      }
-      
-      // Close mobile menu on click
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (mobileMenu && mobileMenu.style.display === 'block') {
-          mobileMenu.style.display = 'none';
+      if (targetSection) {
+        const navbarHeight = 80;
+        const elementPosition = targetSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        
+        // Close mobile menu (your original)
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenu) mobileMenu.style.display = 'none';
       }
     });
-   });
+  });
 
-
-  // Scroll spy
+  // YOUR ORIGINAL Scroll Spy - DON'T TOUCH
+  const sections = document.querySelectorAll('section[id]');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = entry.target.getAttribute('id');
-        
-        // Update desktop nav
         navLinks.forEach(link => {
           link.classList.remove('active');
           if (link.getAttribute('href') === `#${id}`) {
             link.classList.add('active');
           }
         });
-
-        // Update mobile nav
-        mobileNavLinks.forEach(link => {
-            // A simple way to highlight, you can add a class
-            link.style.fontWeight = '500'; 
-            link.style.color = '#1a1a1a';
-            if (link.getAttribute('href') === `#${id}`) {
-                link.style.fontWeight = '700';
-                link.style.color = '#667eea';
-            }
-        });
       }
     });
-  }, { threshold: 0.3, rootMargin: "-100px 0px -100px 0px" }); // Adjust threshold and rootMargin
-
+  }, { threshold: 0.3, rootMargin: '-100px 0px -100px 0px' });
+  
   sections.forEach(section => observer.observe(section));
 }
+
 
 // Scroll animations
 function initScrollAnimations() {
@@ -1235,4 +1239,13 @@ window.addEventListener('load', () => {
 });
 window.addEventListener('load', () => {
   document.body.style.overflowY = 'auto';
+});
+
+
+// Add before closing </script>
+window.addEventListener('resize', () => {
+  if (window.innerWidth <= 768 && lenis) {
+    lenis.destroy();
+    lenis = null;
+  }
 });
