@@ -17,8 +17,9 @@
   <!-- Typed.js (for hero animation) -->
   <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 
-  <!-- NEW: Spline 3D Viewer Script -->
-  <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+  <!-- Spline 3D Viewer Script - UPDATED VERSION -->
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.99/build/spline-viewer.js"></script>
+
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
@@ -36,6 +37,17 @@
       opacity: 0.4;
       pointer-events: none; /* Make it non-interactive */
     }
+
+    /* Experience Section Spline Wrapper */
+
+/* Hide Experience Spline on Mobile */
+@media (max-width: 768px) {
+  #spline-bg,
+  #experience-spline-wrapper {
+    display: none !important;
+  }
+}
+
 
     /* Ensure hero content and scroll indicator are above Spline */
     #home > div[style*="z-index: 10"] {
@@ -291,9 +303,14 @@
   </a>
 
   <!-- Hero Section -->
-  <section id="home" style="display: flex; align-items: center; justify-content: center; position: relative;">
-    <!-- NEW: Spline 3D Model -->
-    <spline-viewer id="spline-bg" url="https://prod.spline.design/CqR6i6sU4JJozZtz/scene.splinecode" events-target="global"></spline-viewer>
+<section id="home" style="display: flex; align-items: center; justify-content: center; position: relative;">
+  <!-- NEW: Updated Spline 3D Model -->
+  <spline-viewer 
+    id="spline-bg" 
+    url="https://prod.spline.design/CqR6i6sU4JJozZtz/scene.splinecode"
+    events-target="global">
+  </spline-viewer>
+
 
     <div class="hero-gradient"></div>
     <div class="grid-pattern"></div>
@@ -301,7 +318,7 @@
     <div style="position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
       <!-- Left: Text Content -->
       <div style="text-align: left;">
-        <div style="font-size: 1rem; color: #000000; margin-bottom: 15px;">
+        <div style="font-size: 1rem; color: #6b7280; margin-bottom: 15px;">
           💼 Available for Freelance Work
         </div>
         <h1 style="font-size: 4rem; font-weight: 900; margin-bottom: 20px; line-height: 1.1; color: #1a1a1a;">
@@ -310,7 +327,7 @@
         <div style="font-size: 1.5rem; color: #4b5563; margin-bottom: 25px; min-height: 45px;">
           <span id="typed-role"></span>
         </div>
-        <p style="font-size: 1.1rem; color: #000000; line-height: 1.8; margin-bottom: 35px;">
+        <p style="font-size: 1.1rem; color: #6b7280; line-height: 1.8; margin-bottom: 35px;">
           I transform complex data into actionable insights and build custom automation solutions that drive real business value.
         </p>
         <div style="display: flex; gap: 15px;">
@@ -375,8 +392,22 @@
   <!-- NEW SECTION ORDER -->
 
   <!-- Experience Section -->
-  <section id="experience" class="reveal" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.03), rgba(240, 147, 251, 0.03));">
-    <div style="max-width: 1200px; margin: 0 auto;">
+<section id="experience" class="reveal" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.03), rgba(240, 147, 251, 0.03));">
+  
+  <!-- ❌ DELETED Spline wrapper -->
+  
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 60px;">
+      <!-- Rest remains same -->
+
+  
+  <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;">
+    <div style="text-align: center; margin-bottom: 60px;">
+      <!-- Rest of content... -->
+
+  
+  <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;">
+
       <div style="text-align: center; margin-bottom: 60px;">
         <div style="color: #667eea; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">My Journey</div>
         <h2 style="font-size: 3rem; font-weight: 800; color: #1a1a1a;">Experience & Education</h2>
@@ -612,10 +643,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
