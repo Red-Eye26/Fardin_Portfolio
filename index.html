@@ -780,6 +780,12 @@
       align-items: start;
     }
 
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       /* Mobile Scroll Fixes */
@@ -833,6 +839,11 @@
         gap: 40px !important;
       }
       
+      /* Fix Projects Grid on Mobile */
+      .projects-grid {
+        grid-template-columns: 1fr !important; /* Force single column */
+      }
+
       /* Contact Form Order */
       .contact-grid > div:first-child { order: 2; } /* Info */
       .contact-grid > form { order: 1; } /* Form */
@@ -1024,7 +1035,7 @@
           A showcase of my recent work demonstrating expertise in data analysis, automation, and custom solutions.
         </p>
       </div>
-      <div id="projects-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+      <div id="projects-container" class="projects-grid">
         <!-- Will be populated from sheet -->
       </div>
     </div>
@@ -1336,7 +1347,6 @@
 
     // --- PAGE INITIALIZATION ---
     window.addEventListener('load', function() {
-      console.log('🔥 Portfolio - Normal Scroll Enabled');
       
       // ✅ Enable normal scroll - Force Reset
       document.documentElement.style.overflow = 'auto';
@@ -1345,14 +1355,11 @@
       document.body.style.overflowY = 'auto';
       
       // DEBUG: Scroll Monitoring
-      console.log('Initial Body Height:', document.body.scrollHeight);
       window.addEventListener('scroll', () => {
-         console.log('Scrolling... Current Y:', window.scrollY); 
       });
       
       // DEBUG: Touch Monitoring
       document.addEventListener('touchmove', (e) => {
-         console.log('Touch move detected', e.touches[0].clientY);
       }, { passive: true });
 
       // Initialize Typed.js
@@ -1396,7 +1403,6 @@
     // --- DATA LOADING ---
     async function loadAndPopulateData() {
         try {
-            console.log("Fetching data from Google Sheets...");
             
             const [configData, iconsData, aboutCardsData, expData, servicesData, projectsData] = await Promise.all([
                 fetchSheetData(SHEET_NAMES.CONFIG),
@@ -1407,7 +1413,6 @@
                 fetchSheetData(SHEET_NAMES.PROJECTS)
             ]);
             
-            console.log("Data fetched. Transforming...");
 
             const transformedData = {
                 config: configData[0] || {},
@@ -1448,7 +1453,6 @@
                 })).filter(row => row.name)
             };
             
-            console.log("Data transformed, populating page:", transformedData);
             populateData(transformedData);
 
         } catch (error) {
@@ -1458,7 +1462,6 @@
 
     // --- POPULATE PAGE DATA ---
     function populateData(data) {
-      console.log('Data received:', data);
 
       if (data.error) {
         showError({ message: data.error });
@@ -1514,7 +1517,6 @@
 
       // Experience Timeline
       if (data.experience && data.experience.length > 0) {
-          console.log('Populating experience:', data.experience);
           const expContainer = document.getElementById('experience-container');
           
           const iconMap = {
@@ -1671,7 +1673,6 @@
             document.documentElement.style.overflowY = 'auto';
             document.documentElement.style.height = 'auto';
             
-            console.log('✅ Scroll unlocked successfully - Final Check');
           }, 500);
         }
       }, 1000);
@@ -1876,8 +1877,6 @@
         btnLoader.style.display = 'inline';
         submitBtn.disabled = true;
         
-        console.log("Form submitting to Web3Forms...");
-        
         try {
           const formData = new FormData(form);
           
@@ -1908,7 +1907,6 @@
         }
       });
       
-      console.log("Contact form initialized with AJAX submission");
     }
 
     function showFormMessage(message, type) {
@@ -2187,7 +2185,6 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
-      console.log('✅ Chatbot initialized successfully');
     }
 
     // --- MOBILE MENU ---
